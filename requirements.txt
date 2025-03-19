@@ -11,5 +11,6 @@ langchain_huggingface
 faiss-cpu
 duckdb
 openai
+streamlit
 langchain-groq
 duckduckgo-search
