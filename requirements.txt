@@ -1,0 +1,15 @@
+langchain
+python-dotenv
+ipykernel
+langchain-community
+pypdf
+bs4
+arxiv
+wikipedia
+langchain-openai
+langchain_huggingface
+faiss-cpu
+duckdb
+openai
+langchain-groq
+duckduckgo-search
