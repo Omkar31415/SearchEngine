@@ -10,6 +10,7 @@ from langchain_huggingface import HuggingFaceEndpoint
 st.set_page_config(page_title="LangChain: Summarize Text From YouTube or Website", page_icon="🦜")
 st.title("🦜 LangChain: Summarize Text From YouTube or Website")
 st.subheader('Summarize URL')
+groq_api_key=st.secrets['groq_api_key']
 
 ## Get the Groq API Key and url(YT or website)to be summarized
 with st.sidebar:
