@@ -6,7 +6,7 @@ from langchain.chains.summarize import load_summarize_chain
 from langchain_community.document_loaders import YoutubeLoader,UnstructuredURLLoader #unstructured url loader is used to load the website data
 from langchain_huggingface import HuggingFaceEndpoint
 
-## streamlit APP
+## Streamlit APP
 st.set_page_config(page_title="LangChain: Summarize Text From YouTube or Website", page_icon="🦜")
 st.title("🦜 LangChain: Summarize Text From YouTube or Website")
 st.subheader('Summarize URL')
