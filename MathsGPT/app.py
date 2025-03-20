@@ -24,7 +24,7 @@ wikipedia_wrapper=WikipediaAPIWrapper()
 wikipedia_tool=Tool(
     name="Wikipedia",
     func=wikipedia_wrapper.run,
-    description="A tool for searching the Internet to find the vatious information on the topics mentioned"
+    description="A tool for searching the Internet to find information on topics mentioned in the question."
 )
 
 ## Initializa the Math tool
@@ -32,14 +32,20 @@ math_chain=LLMMathChain.from_llm(llm=llm)
 calculator=Tool(
     name="Calculator",
     func=math_chain.run,
-    description="A tools for answering math related questions. Only input mathematical expression need to bed provided"
+    description="A tools for answering math related questions. Only input mathematical expression need to be provided"
 )
 
 prompt="""
-Your a agent tasked for solving users mathemtical question. Logically arrive at the solution and provide a detailed explanation
-and display it point wise for the question below
-Question:{question}
-Answer:
+You are an agent specialized in solving mathematical questions. 
+Approach the problem systematically by:
+1. Identifying the relevant variables and quantities
+2. Setting up the appropriate equations or relationships
+3. Solving step-by-step
+4. Verifying the solution makes sense in context
+
+Provide a clear, detailed explanation with each step labeled for the question below:
+Question: {question}
+Answer: 
 """
 
 prompt_template=PromptTemplate(
@@ -53,7 +59,7 @@ chain=LLMChain(llm=llm,prompt=prompt_template)
 reasoning_tool=Tool(
     name="Reasoning tool",
     func=chain.run,
-    description="A tool for answering logic-based and reasoning questions."
+    description="A tool for answering logic-based and reasoning questions that require step-by-step thinking."
 )
 
 ## initialize the agents
@@ -67,35 +73,46 @@ assistant_agent=initialize_agent(
 
 if "messages" not in st.session_state:
     st.session_state["messages"]=[
-        {"role":"assistant","content":"Hi, I'm a Math chatbot who can answer all your maths questions!"}
+        {"role":"assistant","content":"Hi, I'm a Math chatbot who can solve your math problems and answer questions that require reasoning or research!"}
     ]
 
+# Display chat history
 for msg in st.session_state.messages:
     st.chat_message(msg["role"]).write(msg['content'])
 
-## LEts start the interaction
-question=st.text_area("Enter your question:","I have 5 bananas and 7 grapes. I eat 2 bananas and give away 3 grapes. Then I buy a dozen apples and 2 packs of blueberries. Each pack of blueberries contains 25 berries. How many total pieces of fruit do I have at the end?")
+# Create a container for the input area
+input_container = st.container()
 
-if st.button("Find Answer"):
-    if question:
-        with st.spinner("Generating response.."):
-            st.session_state.messages.append({"role":"user","content":question})
-            st.chat_message("user").write(question)
+# Use a form to ensure the input area reappears after submission
+with input_container:
+    with st.form(key="question_form"):
+        question = st.text_area(
+            "Enter your question:",
+            "I have 5 bananas and 7 grapes. I eat 2 bananas and give away 3 grapes. Then I buy a dozen apples and 2 packs of blueberries. Each pack of blueberries contains 25 berries. How many total pieces of fruit do I have at the end?",
+            key=f"question_input_{len(st.session_state.messages)}"  # Unique key based on message count
+        )
+        submit_button = st.form_submit_button("Find Answer")
 
-            st_cb=StreamlitCallbackHandler(st.container(),expand_new_thoughts=False)
-            response=assistant_agent.run(st.session_state.messages,callbacks=[st_cb]
-                                         )
-            st.session_state.messages.append({'role':'assistant',"content":response})
-            st.write('Response:')
+# Process the form submission
+if submit_button and question:
+    with st.spinner("Generating response..."):
+        # Add user message to chat
+        st.session_state.messages.append({"role":"user","content":question})
+        st.chat_message("user").write(question)
+        
+        # Get response from agent
+        try:
+            # Fix the parameter in assistant_agent.run() to pass only the question string
+            response = assistant_agent.run(question, callbacks=[StreamlitCallbackHandler(st.container(), expand_new_thoughts=False)])
+            
+            # Add assistant response to chat
+            st.session_state.messages.append({'role':'assistant', "content":response})
+            st.chat_message("assistant").write(response)
             st.success(response)
-    else:
-        st.warning("Please enter the question")
-
-
-
-
-
-
-
-
-
+            # Force a rerun to update the UI with a fresh form
+            st.rerun()
+        except Exception as e:
+            error_msg = f"An error occurred: {str(e)}"
+            st.error(error_msg)
+            st.session_state.messages.append({'role':'assistant', "content":error_msg})
+            st.rerun()
