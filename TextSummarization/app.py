@@ -4,13 +4,10 @@ from langchain_groq import ChatGroq
 from langchain.chains.summarize import load_summarize_chain
 from langchain_community.document_loaders import YoutubeLoader,UnstructuredURLLoader
 
-
-## sstreamlit APP
+## streamlit APP
 st.set_page_config(page_title="LangChain: Summarize Text From YT or Website", page_icon="🦜")
 st.title("🦜 LangChain: Summarize Text From YT or Website")
 st.subheader('Summarize URL')
-
-
 
 ## Get the Groq API Key and url(YT or website)to be summarized
 with st.sidebar:
@@ -41,7 +38,7 @@ if st.button("Summarize the Content from YT or Website"):
 
     else:
         try:
-            with st.spinner("Waiting..."):
+            with st.spinner("Please wait while summary being generated..."):
                 ## loading the website or yt video data
                 if "youtube.com" in generic_url:
                     loader=YoutubeLoader.from_youtube_url(generic_url,add_video_info=True)
