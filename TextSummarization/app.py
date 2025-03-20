@@ -24,9 +24,18 @@ generic_url=st.text_input("URL",label_visibility="collapsed")
 llm =ChatGroq(model="gemma2-9b-it", groq_api_key=groq_api_key)
 
 prompt_template="""
-Provide a summary of the following content in 300 words:
-Content:{text}
+Provide a concise summary of the following content in 300 words or less:
 
+Your summary should:
+1. Capture the main ideas and key points
+2. Maintain the original tone and intent
+3. Include any critical data, statistics, or findings
+4. Highlight the most important conclusions or takeaways
+5. Avoid unnecessary details or tangential information
+
+Format your response as a coherent paragraph that would be useful for someone who hasn't seen the original content.
+
+Content:{text}
 """
 prompt=PromptTemplate(template=prompt_template,input_variables=["text"])
 
