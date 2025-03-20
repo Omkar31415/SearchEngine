@@ -58,18 +58,6 @@ if db_uri == MYSQL:
 else:
     db = configure_db(db_uri)
 
-# Show schema button
-if st.sidebar.button("Show Database Schema"):
-    try:
-        tables = db.get_usable_table_names()
-        schema_info = "Database Tables:\n"
-        for table in tables:
-            columns = db.get_table_info(table)
-            schema_info += f"\nTable: {table}\n{columns}\n"
-        st.sidebar.code(schema_info)
-    except Exception as e:
-        st.sidebar.error(f"Error fetching schema: {str(e)}")
-
 ## toolkit
 toolkit = SQLDatabaseToolkit(db=db, llm=llm)
 
@@ -80,7 +68,6 @@ agent = create_sql_agent(
     verbose=True,
     agent_type=AgentType.ZERO_SHOT_REACT_DESCRIPTION,  # Changed agent type
     handle_parsing_errors=True, # Added error handling
-    max_iterations=3 
 )
 
 if "messages" not in st.session_state or st.sidebar.button("Clear message history"):
