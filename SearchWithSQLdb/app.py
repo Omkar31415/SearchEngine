@@ -38,7 +38,7 @@ if not api_key:
     st.stop()
 
 ## LLM model
-llm = ChatGroq(groq_api_key=api_key, model_name="Llama3-8b-8192", streaming=True)
+llm = ChatGroq(groq_api_key=api_key, model_name="gemma2-9b-it", streaming=True)
 
 @st.cache_resource(ttl="2h")
 def configure_db(db_uri, mysql_host=None, mysql_user=None, mysql_password=None, mysql_db=None):
@@ -58,6 +58,18 @@ if db_uri == MYSQL:
 else:
     db = configure_db(db_uri)
 
+# Show schema button
+if st.sidebar.button("Show Database Schema"):
+    try:
+        tables = db.get_usable_table_names()
+        schema_info = "Database Tables:\n"
+        for table in tables:
+            columns = db.get_table_info(table)
+            schema_info += f"\nTable: {table}\n{columns}\n"
+        st.sidebar.code(schema_info)
+    except Exception as e:
+        st.sidebar.error(f"Error fetching schema: {str(e)}")
+
 ## toolkit
 toolkit = SQLDatabaseToolkit(db=db, llm=llm)
 
@@ -67,7 +79,8 @@ agent = create_sql_agent(
     toolkit=toolkit,
     verbose=True,
     agent_type=AgentType.ZERO_SHOT_REACT_DESCRIPTION,  # Changed agent type
-    handle_parsing_errors=True  # Added error handling
+    handle_parsing_errors=True, # Added error handling
+    max_iterations=3 
 )
 
 if "messages" not in st.session_state or st.sidebar.button("Clear message history"):
