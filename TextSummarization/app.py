@@ -24,9 +24,7 @@ generic_url=st.text_input("URL",label_visibility="collapsed")
 llm =ChatGroq(model="gemma2-9b-it", groq_api_key=groq_api_key)
 
 prompt_template="""
-Provide a concise summary of the following content in 300 words or less:
-
-Your summary should:
+Provide a concise summary of the following content in 300 words or less. Your summary should contain the following elements,
 1. Capture the main ideas and key points
 2. Maintain the original tone and intent
 3. Include any critical data, statistics, or findings
