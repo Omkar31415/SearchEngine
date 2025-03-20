@@ -23,12 +23,14 @@ generic_url=st.text_input("URL",label_visibility="collapsed")
 ## Gemma Model USsing Groq API
 llm =ChatGroq(model="gemma2-9b-it", groq_api_key=groq_api_key)
 
-prompt_template="""
-Provide a concise summary of the following content in 300 words or less. Your summary should contain the following elements,Capture the main ideas and key points, Maintain the original tone and intent, Include any critical data, statistics, or findings, Highlight the most important conclusions or takeaways, Avoid unnecessary details or tangential information, Format your response as a coherent paragraph that would be useful for someone who hasn't seen the original content.
+# prompt_template="""
+# Provide a concise summary of the following content in 300 words or less. Your summary should contain the following elements,Capture the main ideas and key points, Maintain the original tone and intent, Include any critical data, statistics, or findings, Highlight the most important conclusions or takeaways, Avoid unnecessary details or tangential information, Format your response as a coherent paragraph that would be useful for someone who hasn't seen the original content.
 
-Content:{text}
-"""
-prompt=PromptTemplate(template=prompt_template,input_variables=["text"])
+# Content:{text}
+# """
+# prompt=PromptTemplate(template=prompt_template,input_variables=["text"]) 
+
+#you can use above commeneted part when using 'stuff' chain_type model with prompt=prompt.
 
 if st.button("Summarize"):
     ## Validate all the inputs
@@ -50,7 +52,7 @@ if st.button("Summarize"):
                 final_documents=RecursiveCharacterTextSplitter(chunk_size=2000,chunk_overlap=100).split_documents(docs)
                 
                 ## Chain For Summarization
-                chain=load_summarize_chain(llm,chain_type="refine",prompt=prompt)
+                chain=load_summarize_chain(llm,chain_type="refine")
                 output_summary=chain.run(final_documents)
 
                 st.success(output_summary)
